@@ -1,10 +1,71 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import os, json, datetime, time, pytz
+from bs4 import BeautifulSoup
+import urllib2
 
-# display and load the default EE homepage, with our modifications 
+# Helper method:
+# parse the html contents of http://ee.princeton.edu/slider,
+# and retrieve the center div with the class slider-container
+# replace all image srcs to link to the website, and return the BS object
+def load_slidercontainer():
+
+    # get the html from ee.princeton.edu/slider, load into bs
+    url = "http://ee.princeton.edu/slider/"
+    response = urllib2.urlopen(url)
+    htmlContents = response.read()
+    soup = BeautifulSoup(htmlContents, 'html.parser')
+
+    # slide container class is the single div 
+    rows = soup.find_all('div', class_='slide-container')
+    for img in rows[0].find_all('img'):
+        host = "http://ee.princeton.edu"
+        # get the original image src, remove the first backslash
+        orig = img['src']
+        # new img src should be of the form:  "http://ee.princeton.edu/sites/default/files/Car Lab 2016.jpg"
+        img['src'] = host + orig
+    return rows[0]
+
+# View:
+# display and load the default EE slider by scraping its main contents from the actual website
+# plus our Javascript and CSS. We only update the slider-container into our copy of index.html
 def index(request):
-    #return HttpResponse("Hello World")
+    currdir = os.path.dirname(os.path.dirname(__file__)) # curr directory
+    currdir += '/templates/eeslides_app/'
+    readfilepath = currdir + 'index.html'
+
+    # TODO: fix this hacky soln. right now, bs messes up the formatting for django static files
+    importsfilepath = currdir + 'imports.html'
+
+    # open the current index.html page
+    filedata = None
+    if os.path.isfile(readfilepath):
+        with open(readfilepath, 'r') as readfile:
+            filedata = readfile.read()
+
+    # replace the old slide-container with the new one from load_slidercontainer()
+    if filedata is not None:
+        soup = BeautifulSoup(filedata, "html.parser")
+        try:
+            newrow = load_slidercontainer()
+            soup.find_all('div', class_='slide-container')[0].contents = newrow.contents
+        except:
+            print 'Could not load updated EE slider'
+        else:
+
+            html = soup.prettify('utf-8')
+
+            # TODO: fix this hacky solution to imports, bs messes up formatting 
+            with open(importsfilepath, 'r') as readfile:
+                document= readfile.read()         
+                parts = html.split('<!--IMPORTS-->')
+                parts[1] = document
+                html = ''.join(parts)
+
+            # update our copy of the index.html
+            with open(readfilepath, 'w+') as outfile:
+               outfile.write(html)
+
     return render(request, 'eeslides_app/index.html')
 
 # AJAX backend for polling for faces recognized 
@@ -34,7 +95,6 @@ def check_faces(request):
         # convert since UTC is 4 hours ahead
         now = datetime.datetime.now() - datetime.timedelta(hours=4)
         currdate = now.strftime("%Y-%m-%d")
-        print currdate
 
         # remove anything that took place over a week ago
         newfiledata = {}

@@ -40,7 +40,7 @@ $(document).ready(function () {
                 slider.stopAuto()
             }
             else if (slider.getCurrentSlide() == 0) {
-                if (count > 4) {
+                if (count > 4) { 
                     //window.location = "http://ee.princeton.edu/slider/"
                     window.location = "http://localhost:8000/"
                 }

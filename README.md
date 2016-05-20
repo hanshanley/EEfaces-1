@@ -8,7 +8,10 @@ A face recognizer for Princeton EE department trained with a single image per pe
 4. Start the face recognition backend and then Django server with:
 
 ``` shell
-python facerec_main.py -t ~/Dropbox/faces
+./main.sh
+```
+and 
+```shell
 cd eeslides 
 python manage.py runserver
 ```

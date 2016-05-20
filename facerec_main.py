@@ -174,6 +174,36 @@ def updateJSON(prediction, predictiontime):
     with open(writefilepath, 'w+') as outfile:
         json.dump(filedata,outfile, indent = 4, sort_keys = True)
 
+# retrieves training images and trains the passed recognizer on them
+def train_routine(recognizer, trainingdir):
+    print 'Retrieving training images.'
+    now = time.time()
+    images, labels = get_images_and_labels(trainingdir, 
+        training=True, grayscale=False)
+    
+    print '\tTime : {0:.2f} s'.format(time.time() - now)
+
+    print 'Training the recognizer.'
+    now = time.time()
+    ylabels = recognizer.train(images, labels)
+    
+    print '\tTime : {0:.2f} s'.format(time.time() - now)
+    print 'People in the training set:',
+    people = np.unique(ylabels)
+    for i in range(len(people)):
+        if (i % 4 == 0):
+            print '\n\t {} : {}, '.format(i, people[i]),
+        else:
+            print '{}, '.format(people[i]),
+    print ''
+    return recognizer, ylabels
+
+# returns the number of seconds until midnight
+def secondsUntilMidnight():
+    now = datetime.datetime.now()
+    seconds_until_midnight = (now.replace(hour=23, minute=59, second=59) - now).total_seconds()
+    return seconds_until_midnight
+
 # the webcam capture loop -- it runs a continuous loop by collecting from the webcam
 # until the specified timelimit has elapsed (in seconds)
 def sub_routine(timelimit=86400):
@@ -194,27 +224,12 @@ def sub_routine(timelimit=86400):
     recognizer = OpenfaceRecognizer(knn=3)
     print '\tTime : {0:.2f} s'.format(time.time() - now)
 
-    print 'Retrieving training images.'
-    now = time.time()
-    images, labels = get_images_and_labels(args['traindir'], 
-        training=True, grayscale=False)
-    #images, labels = infer_images_and_labels(args['traindir'],grayscale=False)
-    print '\tTime : {0:.2f} s'.format(time.time() - now)
-
-    print 'Training the recognizer.'
-    now = time.time()
-    ylabels = recognizer.train(images, labels)
+    
+    # train for the first time
     if useVGG == 1:
         ylabels_vgg = vggrecognizer.train(images, labels)
-    print '\tTime : {0:.2f} s'.format(time.time() - now)
-    print 'People in the training set:',
-    people = np.unique(ylabels)
-    for i in range(len(people)):
-        if (i % 4 == 0):
-            print '\n\t {} : {}, '.format(i, people[i]),
-        else:
-            print '{}, '.format(people[i]),
-    print ''
+    recognizer, ylabels = train_routine(recognizer, args['traindir'])
+
     # set up webcam
     fwidth = 640
     fheight = 480
@@ -226,8 +241,6 @@ def sub_routine(timelimit=86400):
 
     # for tracking faces
     trackedfaces = []
-    lastPredictionTime = None
-
 
     print 'Starting the capture.'
     timelimit_start = time.time()
@@ -349,28 +362,40 @@ def sub_routine(timelimit=86400):
 
         # Display the resulting frame
         cv2.imshow('frame',cpframe)
-        # quit if the user presses q on the screen, or the elapsed amount of time has passed
-        if (cv2.waitKey(1) & 0xFF == ord('q')) or (time.time() - timelimit_start > timelimit):
+        # quit if the user presses q on the screen, 
+        if (cv2.waitKey(1) & 0xFF == ord('q')) or time.time() - timelimit_start > timelimit:
             break
 
-    # When everything done, release the capture
-    for oldface in trackedfaces:
-        del oldface
+        # TODO: decide what to do with this code. It used to retrain, but now it doesn't
+        # or the elapsed amount of time has passed, retrain and keep going
+        # elif time.time() - timelimit_start > timelimit:
+        #     cv2.destroyAllWindows()
+        #     for oldface in trackedfaces:
+        #         del oldface
+        #     print 'time limit reached, retrain'
+
+        #     # retrain 
+        #     if useVGG == 1:
+        #         ylabels_vgg = vggrecognizer.train(images, labels)
+        #     recognizer, ylabels = train_routine(recognizer, args['traindir'])
+        #     print 'Starting the capture.'
+            
+        #     # reset timing 
+        #     seconds_until_midnight = secondsUntilMidnight()
+        #     print 'Will reset itself in {} sec'.format(seconds_until_midnight)
+        #     timelimit_start = time.time()
+
+    # When everything done, release the capture    
     cap.release()
     cv2.destroyAllWindows()
-    return True
 
 # the main loop
 # it runs the sub_routine loops infinitely, for the specified amount of time
 def main():
-    looping = True
-    while looping:
-        print 'starting new subroutine'
-        inroutine = True
-        now = datetime.datetime.now()
-        seconds_until_midnight = (now.replace(hour=23, minute=59, second=59) - now).total_seconds()
-        print 'Will reset itself in {} sec'.format(seconds_until_midnight)
-        _ = sub_routine(timelimit=seconds_until_midnight)
+    seconds_until_midnight = secondsUntilMidnight()
+    print 'Will reset itself in {} sec'.format(seconds_until_midnight)
+    sub_routine(timelimit=seconds_until_midnight)
+    print 'Exit successful'
 
 
 if __name__ == '__main__':
