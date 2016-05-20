@@ -368,7 +368,7 @@ def main():
         now = datetime.datetime.now()
         seconds_until_midnight = (now.replace(hour=23, minute=59, second=59) - now).total_seconds()
         print seconds_until_midnight
-        looping = sub_routine(timelimit=15)
+        looping = sub_routine(timelimit=seconds_until_midnight)
 
 
 if __name__ == '__main__':
