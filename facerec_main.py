@@ -354,6 +354,8 @@ def sub_routine(timelimit=86400):
             break
 
     # When everything done, release the capture
+    for oldface in trackedfaces:
+        del oldface
     cap.release()
     cv2.destroyAllWindows()
     return True
@@ -367,8 +369,8 @@ def main():
         inroutine = True
         now = datetime.datetime.now()
         seconds_until_midnight = (now.replace(hour=23, minute=59, second=59) - now).total_seconds()
-        print seconds_until_midnight
-        looping = sub_routine(timelimit=seconds_until_midnight)
+        print 'Will reset itself in {} sec'.format(seconds_until_midnight)
+        _ = sub_routine(timelimit=seconds_until_midnight)
 
 
 if __name__ == '__main__':

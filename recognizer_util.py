@@ -61,12 +61,12 @@ def get_images_and_labels(dire, training, grayscale=True):
         else:
             caption = 'Adding faces to testing set'
         
-        cv2.imshow(caption, img.astype(np.uint8))
-        cv2.waitKey(10)
+        #cv2.imshow(caption, img.astype(np.uint8))
+        #cv2.waitKey(10)
 
         images.append(img.astype(np.uint8))
         labels.append(label)
-        cv2.destroyAllWindows()
+        #cv2.destroyAllWindows()
 
     
     return images, labels
@@ -99,12 +99,12 @@ def infer_images_and_labels(dire, grayscale=True):
             img = np.array(image_pil, 'float32') # dtype care
             caption = 'Retrieving faces'
             
-            cv2.imshow(caption, img.astype(np.uint8))
-            cv2.waitKey(10)
+            #cv2.imshow(caption, img.astype(np.uint8))
+            #cv2.waitKey(10)
 
             images.append(img.astype(np.uint8))
             labels.append(label)
-            cv2.destroyAllWindows()
+            #cv2.destroyAllWindows()
         except: 
             continue
 
@@ -157,12 +157,12 @@ def get_images_and_labels_feret(dire, training, grayscale=False):
         else:
             caption = 'Adding faces to testing set'
         
-        cv2.imshow(caption, img.astype(np.uint8))
-        cv2.waitKey(10)
+        #cv2.imshow(caption, img.astype(np.uint8))
+        #cv2.waitKey(10)
 
         images.append(img.astype(np.uint8))
         labels.append(label)
-        cv2.destroyAllWindows()
+        #cv2.destroyAllWindows()
 
     # find the orientation and session of the photo
     orientations = []
