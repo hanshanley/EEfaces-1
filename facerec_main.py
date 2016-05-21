@@ -231,8 +231,8 @@ def sub_routine(timelimit=86400):
     recognizer, ylabels = train_routine(recognizer, args['traindir'])
 
     # set up webcam
-    fwidth = 640
-    fheight = 480
+    fwidth = 1200
+    fheight = 800
 
     cap = initializeWebcam(cam=0,width=fwidth,height=fheight)
     # for tracking fps
