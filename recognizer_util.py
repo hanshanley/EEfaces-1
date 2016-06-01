@@ -90,7 +90,8 @@ def infer_images_and_labels(dire, grayscale=True):
         try:
             filename = fn
             # extract label from: [number/identifier]_[label].extension 
-            label = (' '.join(fn.split('_')[1:])).split('.')[0]
+            # label = (' '.join(fn.split('_')[1:])).split('.')[0]
+            label = (' '.join(fn[:-4].split('_')[1:]))
             image_path = dire + '/' + filename
             if grayscale: # read in as grayscale
                 image_pil = Image.open(image_path).convert('L')
