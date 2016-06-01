@@ -1,6 +1,6 @@
 '''
 Author: Kevin Wang
-Last updated: 5/2/16
+Last updated: 6/1/16    by Sanket Satpathy
 Used with Python 2.7
 
 Description:
@@ -18,9 +18,11 @@ import numpy as np
 np.set_printoptions(precision=2)
 import openface
 from sklearn.neighbors import NearestNeighbors
+from dlib import rectangle
 
 # flag for saving npy array (1), or loading an old one (0)
 saveon = 1
+include_flip = False
 
 class OpenfaceRecognizer:
     # maps point to label in NN implementation
@@ -35,8 +37,6 @@ class OpenfaceRecognizer:
     imgDim = 96
     # sklearn nearest neighbors object
     nbrs = None
-    # number of neighbors
-    knn = 3
 
     # need to specify where to find the dlib model and NN
     fileDir = os.path.dirname(os.path.realpath(__file__))
@@ -64,13 +64,14 @@ class OpenfaceRecognizer:
         if saveon == 1:
             features = np.array([]).reshape(0, 128)
             for i,l in zip(images,labels):
+                print 'OpenFace: ', l
                 rep = self.getRep(i)
                 if rep is not None:
                     features = np.vstack((features, rep.reshape(1, -1)))
                     self.ylabels.append(l)
                     # also use the left-right flipped images
-                    flip = self.getRep(np.fliplr(i))
-                    if flip is not None:
+                    if include_flip:
+                        flip = self.getRep(np.fliplr(i))
                         features = np.vstack((features, flip.reshape(1, -1)))
                         self.ylabels.append(l)
             np.save('of_ylabels.npy', self.ylabels)
@@ -104,8 +105,11 @@ class OpenfaceRecognizer:
             print 'Train before predicting!'
             return
 
+        # now = time.time()
         predrep = self.getRep(image)
+        # print '\tComputing OpenFace feature took {0:.2f} seconds'.format(time.time() - now)
         if predrep is None:
+            print 'No feature'
             return None
         dist, ind = self.nbrs.kneighbors(predrep.reshape(1, -1))
         return dist, ind
@@ -122,18 +126,22 @@ class OpenfaceRecognizer:
             else:
                 rgbImg = img
         if rgbImg is None:
+            print 'No image'
             return None
 
         # get bounding box of the face in the image
         bb = self.align.getLargestFaceBoundingBox(rgbImg)
         if bb is None:
-            return None
+            # print 'WARNING: Could not find largest bounding box, using ROI as is'
+            bb = rectangle(0, 0, rgbImg.shape[1], rgbImg.shape[0])
+            # return None
             
         # align the face within the bounding box
         alignedFace = self.align.align(self.imgDim, rgbImg, bb,
                                   landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
 
         if alignedFace is None:
+            print 'No aligned face'
             return None
             
         rep = self.net.forward(alignedFace)

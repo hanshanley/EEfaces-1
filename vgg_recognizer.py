@@ -1,6 +1,6 @@
 '''
 Author: Kevin Wang
-Last updated: 5/4/16
+Last updated: 6/1/16    by Sanket Satpathy
 Used with Python 2.7
 
 Description:
@@ -34,7 +34,7 @@ class VGGRecognizer:
     # nearest neighbors sklearn object
     nbrs = None
     # number of nearest neighbors to use
-    knn = 1
+    # knn = 1
 
     # constructor -- use the default parameters for the best classifier 
     # dire contains the location of the pickled weights
@@ -56,6 +56,7 @@ class VGGRecognizer:
         tr_features = None
         if saveon == 1:
             for i,l in zip(images,labels):
+                print 'VGG: ', l
                 if len(i.shape) == 2:
                     i = i[:, :, np.newaxis]
                     rgbi = np.repeat(i, 3, axis=2)
