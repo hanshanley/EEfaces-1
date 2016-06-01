@@ -26,7 +26,7 @@ from pprint import pprint
 
 F_WIDTH = 640
 F_HEIGHT = 480
-display_feed = True
+display_feed = False#True
 
 # flag for whether or not to use the VGG recognizer for verification
 useVGG = False
@@ -173,7 +173,7 @@ def sub_routine(timelimit=86400):
     # set up webcam
     fwidth = F_WIDTH            # default frame dimensions
     fheight = F_HEIGHT
-    cap = initializeWebcam(cam=1,width=fwidth,height=fheight)
+    cap = initializeWebcam(cam=0,width=fwidth,height=fheight)
     # for tracking fps
     prevtime = None
     currtime = None
@@ -189,6 +189,7 @@ def sub_routine(timelimit=86400):
     while(True):
         # Capture frame-by-frame
         ret, frame = cap.read()
+        frame = frame[:-50,:,:]
         fheight, fwidth = frame.shape[:-1]
 
         # now = time.time()
@@ -196,12 +197,21 @@ def sub_routine(timelimit=86400):
         y_offset = 0
         dlibfaces = dlib_detector(frame)    # ~0.5 s
         if not dlibfaces:   # zoom in if no faces found
-            x_offset = 100
-            x_span = 440
-            y_offset = 250
-            y_span = 120
-            cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),2)
-            dlibfaces = dlib_detector(frame[y_offset:420, x_offset:-100].astype('uint8'), 2)
+            x_offset = 0
+            x_span = fwidth - 2 * x_offset
+            y_offset = 100
+            y_span = 210
+            cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,255,0),1)
+            dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 1)
+            if not dlibfaces:   # zoom in if no faces found
+                x_offset = 0
+                x_span = fwidth - 2 * x_offset
+                y_offset = 220
+                y_span = 150
+                cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),3)
+                dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 2)
+
+
         # print '\tDetecting faces took {0:.2f} seconds'.format(time.time() - now)
 
         faces = []
