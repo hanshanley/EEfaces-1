@@ -15,18 +15,18 @@ Save confident outputs into the JSON file that is parsed by the local website ba
 
 This refreshes itself every 24 hours, to retrain from the same directory
 '''
-import numpy as np, cv2, argparse, os, sys, csv, dlib, time, operator, math, json, datetime
+import numpy as np, cv2, argparse, os, sys, csv, dlib, time, operator, math, json
 np.set_printoptions(precision=2)
 from scipy.misc import imresize
 from PIL import Image
 from recognizer_util import get_images_and_labels
 from recognizer_util import infer_images_and_labels
 from openface_recognizer import OpenfaceRecognizer
-from pprint import pprint
+from datetime import datetime
 
 F_WIDTH = 640
 F_HEIGHT = 480
-display_feed = True
+display_feed = False#True
 
 # flag for whether or not to use the VGG recognizer for verification
 useVGG = False
@@ -99,7 +99,7 @@ def updateJSON(prediction, predictiontime):
         else:
             filedata = {}
 
-        now = datetime.datetime.now()
+        now = datetime.now()
         currdate = now.strftime("%Y-%m-%d")
 
         if currdate not in filedata:
@@ -138,7 +138,7 @@ def train_routine(recognizer, trainingdir):
 
 # returns the number of seconds until midnight
 def secondsUntilMidnight():
-    now = datetime.datetime.now()
+    now = datetime.now()
     seconds_until_midnight = (now.replace(hour=23, minute=59, second=59) - now).total_seconds()
     return seconds_until_midnight
 
@@ -173,7 +173,7 @@ def sub_routine(timelimit=86400):
     # set up webcam
     fwidth = F_WIDTH            # default frame dimensions
     fheight = F_HEIGHT
-    cap = initializeWebcam(cam=1,width=fwidth,height=fheight)
+    cap = initializeWebcam(cam=0,width=fwidth,height=fheight)
     # for tracking fps
     prevtime = None
     currtime = None
@@ -189,6 +189,7 @@ def sub_routine(timelimit=86400):
     while(True):
         # Capture frame-by-frame
         ret, frame = cap.read()
+        frame = frame[:-50,:,:]
         fheight, fwidth = frame.shape[:-1]
 
         # now = time.time()
@@ -196,12 +197,21 @@ def sub_routine(timelimit=86400):
         y_offset = 0
         dlibfaces = dlib_detector(frame)    # ~0.5 s
         if not dlibfaces:   # zoom in if no faces found
-            x_offset = 100
-            x_span = 440
-            y_offset = 250
-            y_span = 120
-            cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),2)
-            dlibfaces = dlib_detector(frame[y_offset:420, x_offset:-100].astype('uint8'), 2)
+            x_offset = 0
+            x_span = fwidth - 2 * x_offset
+            y_offset = 120
+            y_span = 150
+            cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,255,0),1)
+            dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 1)
+            if not dlibfaces:   # zoom in if no faces found
+                x_offset = 0
+                x_span = fwidth - 2 * x_offset
+                y_offset = 230
+                y_span = 100
+                cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),2)
+                dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 2)
+
+
         # print '\tDetecting faces took {0:.2f} seconds'.format(time.time() - now)
 
         faces = []
@@ -254,12 +264,14 @@ def sub_routine(timelimit=86400):
                 name = ylabels[ind[0,0]]
                 weight = ((1. - dist[0,0]/dist[0,1])*100)
 
-                if weight > WEIGHT_CONFIDENCE:
-                    print (name, weight) , datetime.datetime.now()
+                # if weight > WEIGHT_CONFIDENCE/2:
+                print (name, weight) , datetime.now()
                 if weight > WEIGHT_CONFIDENCE and \
                     (lastJSONsave is None or \
                     time.time() - lastJSONsave > JSONsavePeriod):
                     updateJSON(name, time.time())
+                    with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
+                        file.write(str(datetime.now())+'\t'+name+'\n')
                     lastJSONsave = time.time()
                     JSONsavePeriod = 5 + 20 * np.random.rand()  # random delay
 
@@ -295,6 +307,8 @@ def sub_routine(timelimit=86400):
 # the main loop
 # it runs the sub_routine loops infinitely, for the specified amount of time
 def main():
+    with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
+        file.write(str(datetime.now())+'\tSystem Restart\n')
     seconds_until_midnight = secondsUntilMidnight()
     print 'Will reset itself in {} sec'.format(seconds_until_midnight)
     sub_routine(timelimit=seconds_until_midnight)
