@@ -201,14 +201,16 @@ def sub_routine(timelimit=86400):
             x_span = fwidth - 2 * x_offset
             y_offset = 120
             y_span = 150
-            cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,255,0),1)
+            if display_feed:
+                cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,255,0),1)
             dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 1)
             if not dlibfaces:   # zoom in if no faces found
                 x_offset = 0
                 x_span = fwidth - 2 * x_offset
                 y_offset = 230
                 y_span = 100
-                cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),2)
+                if display_feed:
+                    cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),2)
                 dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 2)
 
 
