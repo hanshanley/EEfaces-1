@@ -30,7 +30,7 @@ display_feed = False#True
 save_faces = True
 
 # flag for whether or not to use the VGG recognizer for verification
-useVGG = False
+useVGG = True#False
 if useVGG:
     from vgg_recognizer import VGGRecognizer
 
@@ -167,7 +167,7 @@ def sub_routine(timelimit=86400):
     
     # train for the first time
     if useVGG:
-        recognizer, ylabels_vgg = train_routine(recognizer, args['traindir'])
+        recognizer, ylabels = train_routine(recognizer, args['traindir'])
     else:
         recognizer, ylabels = train_routine(recognizer, args['traindir'])
 
