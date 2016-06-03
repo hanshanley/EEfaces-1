@@ -270,7 +270,7 @@ def sub_routine(timelimit=86400):
                 # if weight > WEIGHT_CONFIDENCE/2:
                 # print (name, weight) , datetime.now()
                 with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
-                    file.write(str(datetime.now())+'\t'+name+'\n')
+                    file.write(str(datetime.now())+'\t'+name+'\t'+str(weight)+'\n')
                 if save_faces:
                     cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/'+name+' '+str(weight)[:4]+'.jpg', roi)
                 if weight > WEIGHT_CONFIDENCE and \
