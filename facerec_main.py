@@ -27,6 +27,7 @@ from datetime import datetime
 F_WIDTH = 640
 F_HEIGHT = 480
 display_feed = False#True
+save_faces = True
 
 # flag for whether or not to use the VGG recognizer for verification
 useVGG = False
@@ -203,14 +204,14 @@ def sub_routine(timelimit=86400):
             y_span = 150
             if display_feed:
                 cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,255,0),1)
-            dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 1)
+            dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 2)
             if not dlibfaces:   # zoom in if no faces found
                 x_offset = 0
                 x_span = fwidth - 2 * x_offset
                 y_offset = 230
                 y_span = 100
                 if display_feed:
-                    cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),2)
+                    cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),1)
                 dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 2)
 
 
@@ -267,13 +268,15 @@ def sub_routine(timelimit=86400):
                 weight = ((1. - dist[0,0]/dist[0,1])*100)
 
                 # if weight > WEIGHT_CONFIDENCE/2:
-                print (name, weight) , datetime.now()
+                # print (name, weight) , datetime.now()
+                with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
+                    file.write(str(datetime.now())+'\t'+name+'\n')
+                if save_faces:
+                    cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/'+name+' '+str(weight)[:4]+'.jpg', roi)
                 if weight > WEIGHT_CONFIDENCE and \
                     (lastJSONsave is None or \
                     time.time() - lastJSONsave > JSONsavePeriod):
                     updateJSON(name, time.time())
-                    with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
-                        file.write(str(datetime.now())+'\t'+name+'\n')
                     lastJSONsave = time.time()
                     JSONsavePeriod = 5 + 20 * np.random.rand()  # random delay
 
@@ -294,13 +297,12 @@ def sub_routine(timelimit=86400):
                 #tpf = "tpf : {0}".format(timeperframe)
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 cv2.putText(frame, fps, (20, 20), font, 0.5, (255,0,0))
-
-
             # Display the resulting frame
             cv2.imshow('frame',frame)
-            # quit if the user presses q on the screen, 
-            if (cv2.waitKey(1) & 0xFF == ord('q')) or time.time() - timelimit_start > timelimit:
-                break
+
+        # quit if the user presses q on the screen, 
+        if (cv2.waitKey(1) & 0xFF == ord('q')) or time.time() - timelimit_start > timelimit:
+            break
 
     # When everything done, release the capture    
     cap.release()
