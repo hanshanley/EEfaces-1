@@ -1,6 +1,6 @@
 '''
 Author: Kevin Wang
-Last updated: 6/5/16    by Sanket Satpathy
+Last updated: 6/6/16    by Sanket Satpathy
 Used with Python 2.7
 
 Description:
