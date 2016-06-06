@@ -1,6 +1,6 @@
 '''
 Author: Kevin Wang
-Last updated: 5/4/16
+Last updated: 6/6/16    by Sanket Satpathy
 Used with Python 2.7
 
 Contains common functions that are used in other files, i.e. for loading images and labels, 
