@@ -26,7 +26,7 @@ from datetime import datetime
 
 F_WIDTH = 640
 F_HEIGHT = 480
-display_feed = False#True
+display_feed = True
 save_faces = True
 
 # flag for whether or not to use the VGG recognizer for verification
@@ -36,7 +36,10 @@ if useVGG:
 
 # the minimum proportion of the weight we need to be "confident"
 # about a face and save it to a file
-WEIGHT_CONFIDENCE = 40
+if useVGG:
+    WEIGHT_CONFIDENCE = 25
+else:
+    WEIGHT_CONFIDENCE = 36
 NEAREST_NEIGHBORS = 2
 
 # for tracking faces
@@ -249,8 +252,9 @@ def sub_routine(timelimit=86400):
                 matchedface = TrackFace(x, y, w, h)
                 trackedfaces.append(matchedface)
                 # display rectangle and text over face, in green
-                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-            else:
+                if display_feed:
+                    cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+            elif display_feed:
                 # display rectangle and text over face, in blue
                 cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
 
@@ -270,9 +274,11 @@ def sub_routine(timelimit=86400):
                 # if weight > WEIGHT_CONFIDENCE/2:
                 # print (name, weight) , datetime.now()
                 with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
-                    file.write(str(datetime.now())+'\t'+name+'\t'+str(weight)+'\n')
+                    file.write('{0:s}\t{1:s}\t{2:.2f}\t{3:.2f}\n'.format(str(datetime.now()), name, weight, dist[0,0]))
+                    # file.write(str(datetime.now())+'\t'+name+'\t'+str(weight)+'\n')
                 if save_faces:
-                    cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/'+name+' '+str(weight)[:4]+'.jpg', roi)
+                    cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/{0:s} {1:.2f}.jpg'.format(name, weight), roi)
+                    # cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/'+name+' '+str(weight)[:4]+'.jpg', roi)
                 if weight > WEIGHT_CONFIDENCE and \
                     (lastJSONsave is None or \
                     time.time() - lastJSONsave > JSONsavePeriod):
@@ -312,7 +318,10 @@ def sub_routine(timelimit=86400):
 # it runs the sub_routine loops infinitely, for the specified amount of time
 def main():
     with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
-        file.write(str(datetime.now())+'\tSystem Restart\n')
+        if useVGG:
+            file.write(str(datetime.now())+'\tSystem Restart using VGG\n')
+        else:
+            file.write(str(datetime.now())+'\tSystem Restart using OpenFace\n')
     seconds_until_midnight = secondsUntilMidnight()
     print 'Will reset itself in {} sec'.format(seconds_until_midnight)
     sub_routine(timelimit=seconds_until_midnight)
