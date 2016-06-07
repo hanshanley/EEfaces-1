@@ -1,6 +1,6 @@
 '''
 Author: Kevin Wang
-Last updated: 6/1/16    by Sanket Satpathy
+Last updated: 6/5/16    by Sanket Satpathy
 Used with Python 2.7
 
 Description:
@@ -22,7 +22,15 @@ from dlib import rectangle
 
 # flag for saving npy array (1), or loading an old one (0)
 saveon = 1
-include_flip = False
+include_flip = True
+include_truncation = True
+include_rotation = True
+
+def rotate(img, angle):
+    h, w = img.shape[:2]
+    center = (w/2, h/2)
+    M = cv2.getRotationMatrix2D(center, angle, 1.0)
+    return cv2.warpAffine(img, M, (w, h))
 
 class OpenfaceRecognizer:
     # maps point to label in NN implementation
@@ -71,9 +79,22 @@ class OpenfaceRecognizer:
                     self.ylabels.append(l)
                     # also use the left-right flipped images
                     if include_flip:
-                        flip = self.getRep(np.fliplr(i))
-                        features = np.vstack((features, flip.reshape(1, -1)))
+                        feature = self.getRep(np.fliplr(i))
+                        features = np.vstack((features, feature.reshape(1, -1)))
                         self.ylabels.append(l)
+                    if include_truncation:
+                        for j in xrange(1,6):
+                            feature = self.getRep(i[j * i.shape[0]/10:,:,:])  # remove upper face
+                            features = np.vstack((features, feature.reshape(1, -1)))
+                            self.ylabels.append(l)
+                            feature = self.getRep(i[:-j * i.shape[0]/10,:,:])  # remove lower face
+                            features = np.vstack((features, feature.reshape(1, -1)))
+                            self.ylabels.append(l)
+                    if include_rotation:
+                        for angle in xrange(-30, 35, 5):
+                            feature = self.getRep(rotate(i, angle))  # rotate face
+                            features = np.vstack((features, feature.reshape(1, -1)))
+                            self.ylabels.append(l)
             np.save('of_ylabels.npy', self.ylabels)
             np.save('of_features.npy', features)
         else:

@@ -1,6 +1,6 @@
 '''
 Author: Kevin Wang
-Last updated: 6/1/16    by Sanket Satpathy
+Last updated: 6/5/16    by Sanket Satpathy
 Used with Python 2.7
 
 Description:
@@ -23,6 +23,15 @@ from sklearn.neighbors import NearestNeighbors
 
 # flag for saving numpy array (1), or loading an old one (0)
 saveon = 1
+include_flip = False#True
+include_truncation = False#True
+include_rotation = False#True
+
+def rotate(img, angle):
+    h, w = img.shape[:2]
+    center = (w/2, h/2)
+    M = cv2.getRotationMatrix2D(center, angle, 1.0)
+    return cv2.warpAffine(img, M, (w, h))
 
 class VGGRecognizer:
     # maps point to label in NN implementation
@@ -70,10 +79,23 @@ class VGGRecognizer:
                         tr_features = np.vstack((tr_features, feature))
                     self.ylabels.append(l)
                     # include the LR flip in training
-                    flip = vgg_feature.get_feature(np.fliplr(rgbi), self.net)
-                    if flip is not None:
-                        tr_features = np.vstack((tr_features, flip))
+                    if include_flip:
+                        feature = vgg_feature.get_feature(np.fliplr(rgbi), self.net)
+                        tr_features = np.vstack((tr_features, feature))
                         self.ylabels.append(l)
+                    if include_truncation:
+                        for j in xrange(1,6):
+                            feature = vgg_feature.get_feature(rgbi[j * rgbi.shape[0]/10:,:,:], self.net)  # remove upper face
+                            tr_features = np.vstack((tr_features, feature))
+                            self.ylabels.append(l)
+                            feature = vgg_feature.get_feature(rgbi[:-j * rgbi.shape[0]/10,:,:], self.net)  # remove lower face
+                            tr_features = np.vstack((tr_features, feature))
+                            self.ylabels.append(l)
+                    if include_rotation:
+                        for angle in xrange(-30, 35, 5):
+                            feature = vgg_feature.get_feature(rotate(rgbi, angle), self.net)  # rotate face
+                            tr_features = np.vstack((tr_features, feature))
+                            self.ylabels.append(l)
             np.save('vgg_ylabels.npy', self.ylabels)
             np.save('vgg_features.npy', tr_features)
         else:
@@ -102,8 +124,11 @@ class VGGRecognizer:
         if not self.initialized:
             print 'Train before predicting!'
             return
-
+        now = time.time()
         pred_feature = vgg_feature.get_feature(image, self.net)
+        print '\tTime to compute VGG feature : {0:.2f} s'.format(time.time() - now)
+        now = time.time()
         dist, ind = self.nbrs.kneighbors(pred_feature)
+        print '\tTime to compute nearest neighbors : {0:.2f} s'.format(time.time() - now)
         return dist, ind
 
