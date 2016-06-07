@@ -24,13 +24,14 @@ from recognizer_util import infer_images_and_labels
 from openface_recognizer import OpenfaceRecognizer
 from datetime import datetime
 
-F_WIDTH = 640
-F_HEIGHT = 480
-display_feed = True
+F_WIDTH = 1280#960#640
+F_HEIGHT = 720#720#480
+relative_resolution = F_HEIGHT/float(480)
+display_feed = False
 save_faces = True
 
 # flag for whether or not to use the VGG recognizer for verification
-useVGG = True#False
+useVGG = True
 if useVGG:
     from vgg_recognizer import VGGRecognizer
 
@@ -130,6 +131,9 @@ def train_routine(recognizer, trainingdir):
     ylabels = recognizer.train(images, labels)
     
     print '\tTime : {0:.2f} s'.format(time.time() - now)
+    with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
+        file.write('Training took {0:.2f} s\n'.format(time.time() - now))
+
     print 'People in the training set:',
     people = np.unique(ylabels)
     for i in range(len(people)):
@@ -197,25 +201,26 @@ def sub_routine(timelimit=86400):
         fheight, fwidth = frame.shape[:-1]
 
         # now = time.time()
+        dlibfaces = None
         x_offset = 0
         y_offset = 0
         dlibfaces = dlib_detector(frame)    # ~0.5 s
         if not dlibfaces:   # zoom in if no faces found
-            x_offset = 0
+            x_offset = 100
             x_span = fwidth - 2 * x_offset
-            y_offset = 120
-            y_span = 150
+            y_offset = int(120*relative_resolution)
+            y_span = int(150*relative_resolution)
             if display_feed:
                 cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,255,0),1)
             dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 2)
-            if not dlibfaces:   # zoom in if no faces found
-                x_offset = 0
-                x_span = fwidth - 2 * x_offset
-                y_offset = 230
-                y_span = 100
-                if display_feed:
-                    cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),1)
-                dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 2)
+            # if not dlibfaces:   # zoom in if no faces found
+            #     x_offset = 0
+            #     x_span = fwidth - 2 * x_offset
+            #     y_offset = int(230*relative_resolution)
+            #     y_span = int(100*relative_resolution)
+            #     if display_feed:
+            #         cv2.rectangle(frame,(x_offset, y_offset),(x_offset+x_span, y_offset+y_span),(0,0,255),1)
+            #     dlibfaces = dlib_detector(frame[y_offset:y_offset+y_span, x_offset:x_offset+x_span].astype('uint8'), 2)
 
 
         # print '\tDetecting faces took {0:.2f} seconds'.format(time.time() - now)
@@ -262,7 +267,7 @@ def sub_routine(timelimit=86400):
             roi = frame[y:y+h, x:x+w]
 
             # run prediction over the ROI
-            prediction = recognizer.verbose_predict(roi)
+            prediction = recognizer.verbose_predict(cv2.cvtColor(roi, cv2.COLOR_BGR2RGB))
 
             # if we have a valid prediction
             if prediction is not None:
@@ -319,9 +324,9 @@ def sub_routine(timelimit=86400):
 def main():
     with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
         if useVGG:
-            file.write(str(datetime.now())+'\tSystem Restart using VGG\n')
+            file.write(str(datetime.now())+'\tSystem Restart using VGG.  ')
         else:
-            file.write(str(datetime.now())+'\tSystem Restart using OpenFace\n')
+            file.write(str(datetime.now())+'\tSystem Restart using OpenFace.  ')
     seconds_until_midnight = secondsUntilMidnight()
     print 'Will reset itself in {} sec'.format(seconds_until_midnight)
     sub_routine(timelimit=seconds_until_midnight)

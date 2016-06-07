@@ -31,7 +31,7 @@ from lasagne.nonlinearities import rectify
 IMAGE_W = 224
 
 # average pixel values (RGB) in VGG training set
-MEAN_VALUES = np.array([129.1863,104.7624,93.5940]).reshape((3,1,1))	
+# MEAN_VALUES = np.array([129.1863,104.7624,93.5940]).reshape((1,1,3))	
 
 LAYERS = ['pool6']  # features for classification
 
@@ -46,10 +46,16 @@ def prep_image(im):
         im = np.repeat(im, 3, axis=2)
 
     # height is span of head
+    h, w, _ = im.shape
     im = skimage.transform.resize(im, (IMAGE_W, w*IMAGE_W/h), preserve_range=True)
+    # average pixel values (RGB) in VGG training set
+    MEAN_VALUES = np.array([129.1863,104.7624,93.5940]).reshape((1,1,3))
     # make square
-    if im.shape[0] > im.shape[1]:
-        im = np.hstack((np.tile(MEAN_VALUES, (IMAGE_W, (IMAGE_W-im.shape[1])/2, 1)), im, np.tile(MEAN_VALUES, (IMAGE_W, IMAGE_W - (IMAGE_W-im.shape[1])/2 - img.shape[1], 1))))
+    if im.shape[0] >= im.shape[1]:
+        # print 'L', np.tile(MEAN_VALUES, (IMAGE_W, (IMAGE_W-im.shape[1])/2, 1)).shape
+        # print 'C', im.shape
+        # print 'R', np.tile(MEAN_VALUES, (IMAGE_W, IMAGE_W - (IMAGE_W-im.shape[1])/2 - im.shape[1], 1)).shape
+        im = np.hstack((np.tile(MEAN_VALUES, (IMAGE_W, (IMAGE_W-im.shape[1])/2, 1)), im, np.tile(MEAN_VALUES, (IMAGE_W, IMAGE_W - (IMAGE_W-im.shape[1])/2 - im.shape[1], 1))))
     else:
         im = im[:,:IMAGE_W,:]
     
@@ -57,9 +63,12 @@ def prep_image(im):
     
     # Shuffle axes to c01
     im = np.swapaxes(np.swapaxes(im, 1, 2), 0, 1)
+    MEAN_VALUES = np.array([129.1863,104.7624,93.5940]).reshape((3,1,1))
     
-    # Convert RGB to BGR
+    # subtract RGB mean
     im = im - MEAN_VALUES
+
+    # Convert RGB to BGR
     im = im[::-1, :, :]
 
     return rawim, floatX(im[np.newaxis])

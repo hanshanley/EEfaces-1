@@ -97,6 +97,7 @@ def infer_images_and_labels(dire, grayscale=True):
                 image_pil = Image.open(image_path).convert('L')
             else: # otherwise read in as BGR
                 image_pil = cv2.imread(image_path)
+                image_pil = cv2.cvtColor(image_pil, cv2.COLOR_BGR2RGB) # convert to RGB
             img = np.array(image_pil, 'float32') # dtype care
             caption = 'Retrieving faces'
             

@@ -138,7 +138,7 @@ class OpenfaceRecognizer:
     # returns the 128 dimension vector of the neural net feature embedding
     # or returns None if it runs into any errors during the embedding
     # use parameter rgb as False if the image is bgr.
-    def getRep(self, img, rgb=False):
+    def getRep(self, img, rgb=True):
         if len(img.shape) < 3: # if grayscale, convert to 3 channel image
             rgbImg = cv2.cvtColor(img,cv2.COLOR_GRAY2RGB)
         else: # otherwise convert to rgb 
