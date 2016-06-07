@@ -30,7 +30,7 @@ from lasagne.nonlinearities import rectify
 
 IMAGE_W = 224
 
-# average pixel values in VGG training set
+# average pixel values (RGB) in VGG training set
 MEAN_VALUES = np.array([129.1863,104.7624,93.5940]).reshape((3,1,1))	
 
 LAYERS = ['pool6']  # features for classification
@@ -44,29 +44,24 @@ def prep_image(im):
     if len(im.shape) == 2:
         im = im[:, :, np.newaxis]
         im = np.repeat(im, 3, axis=2)
-    h, w, _ = im.shape
-    if h < w:
-        im = skimage.transform.resize(im, (IMAGE_W, w*IMAGE_W/h), preserve_range=True)
-    else:
-        im = skimage.transform.resize(im, (h*IMAGE_W/w, IMAGE_W), preserve_range=True)
 
-    # Central crop
-    h, w, _ = im.shape
-    im = im[h//2-IMAGE_W//2:h//2+IMAGE_W//2, w//2-IMAGE_W//2:w//2+IMAGE_W//2]
+    # height is span of head
+    im = skimage.transform.resize(im, (IMAGE_W, w*IMAGE_W/h), preserve_range=True)
+    # make square
+    if im.shape[0] > im.shape[1]:
+        im = np.hstack((np.tile(MEAN_VALUES, (IMAGE_W, (IMAGE_W-im.shape[1])/2, 1)), im, np.tile(MEAN_VALUES, (IMAGE_W, IMAGE_W - (IMAGE_W-im.shape[1])/2 - img.shape[1], 1))))
+    else:
+        im = im[:,:IMAGE_W,:]
     
     rawim = np.copy(im).astype('uint8')
-
-    # Display the image
-    #cv2.imshow('rawim', rawim)
-    #cv2.waitKey(0)
     
     # Shuffle axes to c01
     im = np.swapaxes(np.swapaxes(im, 1, 2), 0, 1)
     
     # Convert RGB to BGR
+    im = im - MEAN_VALUES
     im = im[::-1, :, :]
 
-    im = im - MEAN_VALUES
     return rawim, floatX(im[np.newaxis])
 
 # Build the VGGnet
