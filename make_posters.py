@@ -1,3 +1,11 @@
+'''
+Author: Sanket Satpathy
+Last updated: 6/8/16
+Used with Python 2.7
+Description: 
+This is a script to generate posters for the ELE face detection project.
+Posters are generated for each training image.
+'''
 import numpy as np, cv2, os
 np.set_printoptions(precision=2)
 from PIL import Image
