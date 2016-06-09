@@ -92,7 +92,7 @@ class VGGRecognizer:
                             tr_features = np.vstack((tr_features, feature))
                             self.ylabels.append(l)
                     if include_rotation:
-                        for angle in xrange(-30, 35, 5):
+                        for angle in [-10, 10]:
                             feature = vgg_feature.get_feature(rotate(rgbi, angle), self.net)  # rotate face
                             tr_features = np.vstack((tr_features, feature))
                             self.ylabels.append(l)

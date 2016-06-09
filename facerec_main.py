@@ -38,7 +38,7 @@ if useVGG:
 # the minimum proportion of the weight we need to be "confident"
 # about a face and save it to a file
 if useVGG:
-    WEIGHT_CONFIDENCE = 25
+    WEIGHT_CONFIDENCE = 18#25
 else:
     WEIGHT_CONFIDENCE = 36
 NEAREST_NEIGHBORS = 2
