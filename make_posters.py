@@ -95,10 +95,10 @@ def make_poster(image_dir, filename):
 	cv2.putText(screen, 'Paul Cuff', (image_xoffset, (x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2-15), font, font_size, (0,0,0), 2)
 	screen[(x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2:(x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2+z.shape[0], image_xoffset:image_xoffset+z.shape[1]] = z
 
-	cv2.imwrite('/Users/EEfaces/Dropbox/EEdisplayfaces/poster/{0:s}.jpg'.format('poster_'+filename_to_name(filename)), screen)
+	cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/poster/{0:s}.jpg'.format('poster_'+filename_to_name(filename)), screen)
 
 def main():
-	image_dir = '/Users/EEfaces/Dropbox/EEdisplayfaces/'
+	image_dir = '/Users/princetonee/Dropbox/EEdisplayfaces/'
 	for filename in os.listdir(image_dir):
 		if filename[-4:].lower() in ['.jpg', '.bmp', '.png', '.gif', '.ppm']:
 			make_poster(image_dir, filename)
