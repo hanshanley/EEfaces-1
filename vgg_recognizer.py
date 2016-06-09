@@ -26,6 +26,7 @@ saveon = 1
 include_flip = False#True
 include_truncation = False#True
 include_rotation = False#True
+include_blur = True
 
 def rotate(img, angle):
     h, w = img.shape[:2]
@@ -94,6 +95,11 @@ class VGGRecognizer:
                     if include_rotation:
                         for angle in [-10, 10]:
                             feature = vgg_feature.get_feature(rotate(rgbi, angle), self.net)  # rotate face
+                            tr_features = np.vstack((tr_features, feature))
+                            self.ylabels.append(l)
+                    if include_blur:
+                        for blur_radius in [3, 7]:
+                            feature = vgg_feature.get_feature(cv2.blur(rgbi, (blur_radius, blur_radius), 0), self.net)  # blur face
                             tr_features = np.vstack((tr_features, feature))
                             self.ylabels.append(l)
             np.save('vgg_ylabels.npy', self.ylabels)
