@@ -21,7 +21,7 @@
 <body>
  <div class="slide-container">
   <div class="slide" id="newsSlide">
-   <div class="view view-front-page-news-items view-id-front_page_news_items view-display-id-block_2 view-dom-id-4ab524859f1ef2fb66624a85e62796c8">
+   <div class="view view-front-page-news-items view-id-front_page_news_items view-display-id-block_2 view-dom-id-02116d41a97e27da27a4102970e959f4">
     <div class="view-header">
      <h1>
       News
@@ -265,7 +265,7 @@
   </div>
   <!-- .slide -->
   <div class="slide" id="eventSlide">
-   <div class="view view-events-home-page view-id-events_home_page view-display-id-block_2 view-dom-id-9149a4266287547027cc69b9ae0a9b4c">
+   <div class="view view-events-home-page view-id-events_home_page view-display-id-block_2 view-dom-id-b29b8f93628e406d249417de13095c3a">
     <div class="view-header">
      <h1>
       Events
@@ -341,8 +341,8 @@
   <!-- .slide -->
  </div>
  <!-- .slide-container -->
- <!-- Added by Kevin Wang for the face recognition-->
- <div id="face-message">
+ <!-- Added by Kevin Wang for the face recognition, Modified by Sanket Satpathy-->
+ <div class="slide" id="face-message">
  </div>
  <script>
   // Added polling loop by Kevin Wang, for updating the face recognition popups
@@ -364,8 +364,11 @@
       var greetings = ["Hi, are you _?", "You look a bit like _", "_ is a nice name",
                        "Did you know _ is really smart?", "Wow, I've never met _ before",
                        "A pleasure to meet you, _", "It's an honor to meet _",
-                       "You have a resemblance to _", "I sense the presence of _",
-                       "Do you know _?", "You remind me of _", "Is it really ... _?"];
+                       "You have a resemblance to _", "I feel the presence of _",
+                       "Do you know _?", "You remind me of _", "Is it really ... _?",
+                       "Are you related to _?", "_, have a great day!",
+                       "I'm happy when _ is around", "I have been looking for _",
+                       "_, where have you been?"];
 
       (function ajax_polling()
       {
@@ -385,17 +388,29 @@
                     console.log(response["names"]);
 
                     if (fadedOut) {
-                      var text = "";
-                      
-                      for (var i = 0; i < response["names"].length; i++) {
-                        var random = greetings[Math.floor(Math.random() * greetings.length)];
-                        var message = random.split("_").join(response["names"][i]) + "<br>";
-                        text += message;
+                      if (response["names"][0].slice(0,7) == "poster_"){
+                        $("#face-message").css({ position:'absolute', top:'0px', left:'0px'});
+                        text = '<img src="static/poster/'.concat(response["names"][0].slice(7))
+                        text = text.concat('" style="width:100%;height:100%;"/>')
+                        $("#face-message").html(text);
+                        $("#face-message").fadeIn();
+                        fadeInTime = new Date() / 1000;
+                        displayTime = 5;
+                      } else {
+                        var text = "";
+                        
+                        for (var i = 0; i < response["names"].length; i++) {
+                          var random = greetings[Math.floor(Math.random() * greetings.length)];
+                          var message = random.split("_").join(response["names"][i]) + "<br>";
+                          text += message;
+                        }
+                        $("#face-message").css({ position:'center'})//, top:'400px', left:'200px'});
+                        $("#face-message").css("font-size", "40px");
+                        $("#face-message").html(text);
+                        $("#face-message").fadeIn();
+                        fadeInTime = new Date() / 1000;
+                        displayTime = 1;
                       }
-                      $("#face-message").css("font-size", "40px");
-                      $("#face-message").html(text);
-                      $("#face-message").fadeIn();
-                      fadeInTime = new Date() / 1000;
                       fadedOut = false;
                     }
                   }
