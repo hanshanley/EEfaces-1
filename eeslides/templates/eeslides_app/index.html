@@ -21,7 +21,7 @@
 <body>
  <div class="slide-container">
   <div class="slide" id="newsSlide">
-   <div class="view view-front-page-news-items view-id-front_page_news_items view-display-id-block_2 view-dom-id-02116d41a97e27da27a4102970e959f4">
+   <div class="view view-front-page-news-items view-id-front_page_news_items view-display-id-block_2 view-dom-id-b9af781690f42813694d3f9d34dd2704">
     <div class="view-header">
      <h1>
       News
@@ -31,6 +31,34 @@
      <div class="item-list">
       <ul>
        <li class="views-row views-row-1 views-row-odd views-row-first">
+        <div about="/news/two-ee-seniors-receive-seas-undergraduate-awards-0" class="node node-news-item node-teaser clearfix" id="node-33194" typeof="sioc:Item foaf:Document">
+         <div class="content">
+          <h2>
+           Two EE Seniors receive SEAS Undergraduate Awards
+          </h2>
+          <div class="field field-name-field-teaser field-type-text-with-summary field-label-hidden">
+           <div class="field-items">
+            <div class="field-item even">
+             <p>
+              Two seniors receive SEAS undergraduate awards on Class Day.
+             </p>
+            </div>
+           </div>
+          </div>
+         </div>
+         <ul class="links inline">
+          <li class="node-readmore first last">
+           <a href="/news/two-ee-seniors-receive-seas-undergraduate-awards-0" rel="tag" title="Two EE Seniors receive SEAS Undergraduate Awards">
+            Read more
+            <span class="element-invisible">
+             about Two EE Seniors receive SEAS Undergraduate Awards
+            </span>
+           </a>
+          </li>
+         </ul>
+        </div>
+       </li>
+       <li class="views-row views-row-2 views-row-even">
         <div about="/news/chung-chih-wu-97-receives-distinguished-award-society-information-display" class="node node-news-item node-teaser clearfix" id="node-33196" typeof="sioc:Item foaf:Document">
          <div class="content">
           <h2>
@@ -58,7 +86,7 @@
          </ul>
         </div>
        </li>
-       <li class="views-row views-row-2 views-row-even">
+       <li class="views-row views-row-3 views-row-odd">
         <div about="/news/department-celebrates-2016-phd-graduates" class="node node-news-item node-teaser clearfix" id="node-33191" typeof="sioc:Item foaf:Document">
          <div class="content">
           <h2>
@@ -86,7 +114,7 @@
          </ul>
         </div>
        </li>
-       <li class="views-row views-row-3 views-row-odd">
+       <li class="views-row views-row-4 views-row-even">
         <div about="/news/department-presents-class-2016-awards" class="node node-news-item node-teaser clearfix" id="node-33192" typeof="sioc:Item foaf:Document">
          <div class="content">
           <h2>
@@ -108,34 +136,6 @@
             Read more
             <span class="element-invisible">
              about Department presents Class of 2016 with Awards
-            </span>
-           </a>
-          </li>
-         </ul>
-        </div>
-       </li>
-       <li class="views-row views-row-4 views-row-even">
-        <div about="/news/two-ee-seniors-receive-seas-undergraduate-awards-0" class="node node-news-item node-teaser clearfix" id="node-33194" typeof="sioc:Item foaf:Document">
-         <div class="content">
-          <h2>
-           Two EE Seniors receive SEAS Undergraduate Awards
-          </h2>
-          <div class="field field-name-field-teaser field-type-text-with-summary field-label-hidden">
-           <div class="field-items">
-            <div class="field-item even">
-             <p>
-              Two seniors receive SEAS undergraduate awards on Class Day.
-             </p>
-            </div>
-           </div>
-          </div>
-         </div>
-         <ul class="links inline">
-          <li class="node-readmore first last">
-           <a href="/news/two-ee-seniors-receive-seas-undergraduate-awards-0" rel="tag" title="Two EE Seniors receive SEAS Undergraduate Awards">
-            Read more
-            <span class="element-invisible">
-             about Two EE Seniors receive SEAS Undergraduate Awards
             </span>
            </a>
           </li>
@@ -233,6 +233,10 @@
   </div>
   <!-- .slide -->
   <div class="slide" id="imageSlide">
+   <img src="http://ee.princeton.edu/sites/default/files/Senior Banquet 2016.jpg"/>
+  </div>
+  <!-- .slide -->
+  <div class="slide" id="imageSlide">
    <img src="http://ee.princeton.edu/sites/default/files/Senior Thesis 2016.jpg"/>
   </div>
   <!-- .slide -->
@@ -249,10 +253,6 @@
   </div>
   <!-- .slide -->
   <div class="slide" id="imageSlide">
-   <img src="http://ee.princeton.edu/sites/default/files/Senior Banquet 2016.jpg"/>
-  </div>
-  <!-- .slide -->
-  <div class="slide" id="imageSlide">
    <img src="http://ee.princeton.edu/sites/default/files/group with text.jpg"/>
   </div>
   <!-- .slide -->
@@ -265,7 +265,7 @@
   </div>
   <!-- .slide -->
   <div class="slide" id="eventSlide">
-   <div class="view view-events-home-page view-id-events_home_page view-display-id-block_2 view-dom-id-b29b8f93628e406d249417de13095c3a">
+   <div class="view view-events-home-page view-id-events_home_page view-display-id-block_2 view-dom-id-43139e62904f4c0e645f3a0843acecc3">
     <div class="view-header">
      <h1>
       Events
@@ -344,6 +344,8 @@
  <!-- Added by Kevin Wang for the face recognition, Modified by Sanket Satpathy-->
  <div class="slide" id="face-message">
  </div>
+ <div class="slide" id="face-poster">
+ </div>
  <script>
   // Added polling loop by Kevin Wang, for updating the face recognition popups
     // Note: this is very inefficient, as it send requests to backend continually
@@ -355,10 +357,13 @@
 
       // when the last greeting message was put up
       var fadeInTime = null;
+      var posterfadeInTime = null;
 
       // Time, in seconds, that the greeting message should stay up
       var displayTime = 1;
+      var posterdisplayTime = 5;
       var fadedOut = true;
+      var posterfadedOut = true;
 
       // Array of random greetings to use
       var greetings = ["Hi, are you _?", "You look a bit like _", "_ is a nice name",
@@ -370,12 +375,20 @@
                        "I'm happy when _ is around", "I have been looking for _",
                        "_, where have you been?"];
 
+      $("#face-poster").css({ position:'absolute', top:'0px', left:'0px'});
+      $("#face-message").css({ position:'center'})//, top:'400px', left:'200px'});
+      $("#face-message").css("font-size", "40px");
+
       (function ajax_polling()
       {
           // fade out the div if necessary
           if (((new Date() / 1000) - fadeInTime) > displayTime) {
             $("#face-message").fadeOut();
             fadedOut = true;
+          }
+          if (((new Date() / 1000) - posterfadeInTime) > posterdisplayTime) {
+            $("#face-poster").fadeOut();
+            posterfadedOut = true;
           }
           // send the request using AJAX
           $.ajax(
@@ -387,29 +400,30 @@
                   if (response["names"].length > 0) {
                     console.log(response["names"]);
 
-                    if (fadedOut) {
+                    if (posterfadedOut) {
                       if (response["names"][0].slice(0,7) == "poster_"){
-                        $("#face-message").css({ position:'absolute', top:'0px', left:'0px'});
-                        text = '<img src="static/poster/'.concat(response["names"][0].slice(7))
+                        // $("#face-poster").css({ position:'absolute', top:'0px', left:'0px'});
+                        text = '<img src="static/poster/'.concat(response["names"][0])
                         text = text.concat('" style="width:100%;height:100%;"/>')
-                        $("#face-message").html(text);
-                        $("#face-message").fadeIn();
-                        fadeInTime = new Date() / 1000;
-                        displayTime = 5;
-                      } else {
+                        $("#face-poster").html(text);
+                        $("#face-poster").fadeIn();
+                        posterfadeInTime = new Date() / 1000;
+                      }
+                    if (fadedOut) {
                         var text = "";
                         
                         for (var i = 0; i < response["names"].length; i++) {
-                          var random = greetings[Math.floor(Math.random() * greetings.length)];
-                          var message = random.split("_").join(response["names"][i]) + "<br>";
-                          text += message;
+                          if (response["names"][i].slice(0,7) != "poster_") {
+                            var random = greetings[Math.floor(Math.random() * greetings.length)];
+                            var message = random.split("_").join(response["names"][i]) + "<br>";
+                            text += message;
+                          }
                         }
-                        $("#face-message").css({ position:'center'})//, top:'400px', left:'200px'});
-                        $("#face-message").css("font-size", "40px");
+                        // $("#face-message").css({ position:'center'})//, top:'400px', left:'200px'});
+                        // $("#face-message").css("font-size", "40px");
                         $("#face-message").html(text);
                         $("#face-message").fadeIn();
                         fadeInTime = new Date() / 1000;
-                        displayTime = 1;
                       }
                       fadedOut = false;
                     }
