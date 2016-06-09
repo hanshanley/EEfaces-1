@@ -1,6 +1,6 @@
 '''
 Author: Kevin Wang
-Last updated: 6/6/16    by Sanket Satpathy
+Last updated: 6/8/16    by Sanket Satpathy
 Used with Python 2.7
 
 Contains common functions that are used in other files, i.e. for loading images and labels, 
@@ -10,6 +10,10 @@ normalizing brightness, and generating numerical labels from string labels
 import os, csv, sys, cv2
 import numpy as np
 from PIL import Image
+
+# assumes format [ID]_[name0]_[name1]_..._[namek].[3-letter extension]
+def filename_to_name(filename):
+    return ' '.join(filename[:-4].split('_')[1:])
 
 # given a directory to search, return the images and labels as lists. training is a boolean to specify
 # whether to get the images from the train_labels.csv (True) or test_labels.csv (False). 
@@ -55,6 +59,7 @@ def get_images_and_labels(dire, training, grayscale=True):
             image_pil = Image.open(image_path).convert('L')
         else: # otherwise read in as BGR
             image_pil = cv2.imread(image_path)
+            image_pil = cv2.cvtColor(image_pil, cv2.COLOR_BGR2RGB) # convert to RGB
         img = np.array(image_pil, 'float32') # dtype care
         if training:
             caption = 'Adding faces to training set'
@@ -91,7 +96,7 @@ def infer_images_and_labels(dire, grayscale=True):
             filename = fn
             # extract label from: [number/identifier]_[label].extension 
             # label = (' '.join(fn.split('_')[1:])).split('.')[0]
-            label = (' '.join(fn[:-4].split('_')[1:]))
+            label = filename_to_name(fn)
             image_path = dire + '/' + filename
             if grayscale: # read in as grayscale
                 image_pil = Image.open(image_path).convert('L')
@@ -153,6 +158,7 @@ def get_images_and_labels_feret(dire, training, grayscale=False):
             image_pil = Image.open(image_path).convert('L')
         else: # otherwise read in as BGR
             image_pil = cv2.imread(image_path)
+            image_pil = cv2.cvtColor(image_pil, cv2.COLOR_BGR2RGB) # convert to RGB
         img = np.array(image_pil, 'float32') # dtype care
         if training:
             caption = 'Adding faces to training set'
