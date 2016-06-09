@@ -402,31 +402,29 @@
 
                     if (posterfadedOut) {
                       if (response["names"][0].slice(0,7) == "poster_"){
-                        // $("#face-poster").css({ position:'absolute', top:'0px', left:'0px'});
                         text = '<img src="static/poster/'.concat(response["names"][0])
                         text = text.concat('" style="width:100%;height:100%;"/>')
                         $("#face-poster").html(text);
                         $("#face-poster").fadeIn();
                         posterfadeInTime = new Date() / 1000;
+                        posterfadedOut = false;
                       }
-                    if (fadedOut) {
-                        var text = "";
-                        
-                        for (var i = 0; i < response["names"].length; i++) {
-                          if (response["names"][i].slice(0,7) != "poster_") {
-                            var random = greetings[Math.floor(Math.random() * greetings.length)];
-                            var message = random.split("_").join(response["names"][i]) + "<br>";
-                            text += message;
-                          }
-                        }
-                        // $("#face-message").css({ position:'center'})//, top:'400px', left:'200px'});
-                        // $("#face-message").css("font-size", "40px");
-                        $("#face-message").html(text);
-                        $("#face-message").fadeIn();
-                        fadeInTime = new Date() / 1000;
-                      }
-                      fadedOut = false;
                     }
+                    if (fadedOut) {
+                      var text = "";
+                      
+                      for (var i = 0; i < response["names"].length; i++) {
+                        if (response["names"][i].slice(0,7) != "poster_") {
+                          var random = greetings[Math.floor(Math.random() * greetings.length)];
+                          var message = random.split("_").join(response["names"][i]) + "<br>";
+                          text += message;
+                        }
+                      }
+                      $("#face-message").html(text);
+                      $("#face-message").fadeIn();
+                      fadeInTime = new Date() / 1000;
+                      fadedOut = false;
+                    }  
                   }
                 },
                 complete: function(response) 
