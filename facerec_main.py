@@ -29,6 +29,7 @@ F_HEIGHT = 720#720#480
 relative_resolution = F_HEIGHT/float(480)
 display_feed = False
 save_faces = True
+display_poster = False
 
 # flag for whether or not to use the VGG recognizer for verification
 useVGG = True
@@ -295,7 +296,7 @@ def sub_routine(timelimit=86400):
                     updateJSON(name, time.time())
                     lastJSONsave = time.time()
                     JSONsavePeriod = 5 + 20 * np.random.rand()  # random delay
-                elif weight > DETECTION_THRESHOLD and \
+                elif display_poster and weight > DETECTION_THRESHOLD and \
                     (lastJSONpostersave is None or \
                     time.time() - lastJSONpostersave > JSONpostersavePeriod):
                     updateJSON('poster_'+name, time.time())
