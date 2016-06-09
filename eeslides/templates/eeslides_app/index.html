@@ -390,7 +390,7 @@
                     if (fadedOut) {
                       if (response["names"][0].slice(0,7) == "poster_"){
                         $("#face-message").css({ position:'absolute', top:'0px', left:'0px'});
-                        text = '<img src="static/poster/'.concat(response["names"][0].slice(7))
+                        text = '<img src="static/poster/'.concat(response["names"][0])
                         text = text.concat('" style="width:100%;height:100%;"/>')
                         $("#face-message").html(text);
                         $("#face-message").fadeIn();
