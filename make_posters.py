@@ -1,3 +1,11 @@
+'''
+Author: Sanket Satpathy
+Last updated: 6/8/16
+Used with Python 2.7
+Description: 
+This is a script to generate posters for the ELE face detection project.
+Posters are generated for each training image.
+'''
 import numpy as np, cv2, os
 np.set_printoptions(precision=2)
 from PIL import Image
@@ -92,7 +100,7 @@ def make_poster(image_dir, filename):
 def main():
 	image_dir = '/Users/EEfaces/Dropbox/EEdisplayfaces/'
 	for filename in os.listdir(image_dir):
-		if filename[-4:].lower() in ['.jpg', '.png']:
+		if filename[-4:].lower() in ['.jpg', '.bmp', '.png', '.gif', '.ppm']:
 			make_poster(image_dir, filename)
 
 if __name__ == '__main__':
