@@ -41,7 +41,7 @@ if useVGG:
     WEIGHT_CONFIDENCE = 18#25
 else:
     WEIGHT_CONFIDENCE = 36
-NEAREST_NEIGHBORS = 2
+NEAREST_NEIGHBORS = 3
 
 # for tracking faces
 class TrackFace:
@@ -274,8 +274,11 @@ def sub_routine(timelimit=86400):
                 dist, ind = prediction
 
                 name = ylabels[ind[0,0]]
-                second = ylabels[ind[0,1]]
-                weight = ((1. - dist[0,0]/dist[0,1])*100)
+                second_i = 1
+                while ylabels[ind[0,second_i]] == name and second_i < NEAREST_NEIGHBORS-1:
+                    second_i += 1
+                second = ylabels[ind[0,second_i]]
+                weight = ((1. - dist[0,0]/dist[0,second_i])*100)
 
                 # if weight > WEIGHT_CONFIDENCE/2:
                 # print (name, weight) , datetime.now()
