@@ -100,7 +100,7 @@ def make_poster(image_dir, filename):
 def main():
 	image_dir = '/Users/EEfaces/Dropbox/EEdisplayfaces/'
 	for filename in os.listdir(image_dir):
-		if filename[-4:].lower() in ['.jpg', '.png']:
+		if filename[-4:].lower() in ['.jpg', '.bmp', '.png', '.gif', '.ppm']:
 			make_poster(image_dir, filename)
 
 if __name__ == '__main__':
