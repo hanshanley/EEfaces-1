@@ -25,6 +25,7 @@ saveon = 1
 include_flip = True
 include_truncation = True
 include_rotation = True
+include_blur = True
 
 def rotate(img, angle):
     h, w = img.shape[:2]
@@ -94,6 +95,11 @@ class OpenfaceRecognizer:
                         for angle in xrange(-30, 35, 5):
                             feature = self.getRep(rotate(i, angle))  # rotate face
                             features = np.vstack((features, feature.reshape(1, -1)))
+                            self.ylabels.append(l)
+                    if include_blur:
+                        for blur_radius in [3, 10]:
+                            feature = vgg_feature.get_feature(cv2.blur(rgbi, (blur_radius, blur_radius), 0), self.net)  # blur face
+                            tr_features = np.vstack((tr_features, feature))
                             self.ylabels.append(l)
             np.save('of_ylabels.npy', self.ylabels)
             np.save('of_features.npy', features)

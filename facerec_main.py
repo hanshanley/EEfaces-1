@@ -274,12 +274,13 @@ def sub_routine(timelimit=86400):
                 dist, ind = prediction
 
                 name = ylabels[ind[0,0]]
+                second = ylabels[ind[0,1]]
                 weight = ((1. - dist[0,0]/dist[0,1])*100)
 
                 # if weight > WEIGHT_CONFIDENCE/2:
                 # print (name, weight) , datetime.now()
                 with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
-                    file.write('{0:s}\t{1:s}\t{2:.2f}\t{3:.2f}\n'.format(str(datetime.now()), name, weight, dist[0,0]))
+                    file.write('{0:s}\t{1:s}\t{2:s}\t{3:.2f}\t{4:.2f}\n'.format(str(datetime.now()), name, second, weight, dist[0,0]))
                     # file.write(str(datetime.now())+'\t'+name+'\t'+str(weight)+'\n')
                 if save_faces:
                     cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/{0:s} {1:.2f}.jpg'.format(name, weight), roi)
