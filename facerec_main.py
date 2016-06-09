@@ -38,9 +38,10 @@ if useVGG:
 # the minimum proportion of the weight we need to be "confident"
 # about a face and save it to a file
 if useVGG:
-    WEIGHT_CONFIDENCE = 18#25
+    PREDICTION_THRESHOLD = 18#25
 else:
-    WEIGHT_CONFIDENCE = 36
+    PREDICTION_THRESHOLD = 36
+DETECTION_THRESHOLD = PREDICTION_THRESHOLD/3    # weaker threshold used for poster display
 NEAREST_NEIGHBORS = 3
 
 # for tracking faces
@@ -189,7 +190,9 @@ def sub_routine(timelimit=86400):
     # for tracking faces
     trackedfaces = []
     lastJSONsave = None
+    lastJSONpostersave = None
     JSONsavePeriod = 5
+    JSONpostersavePeriod = 60
 
     print 'Starting the capture.'
     timelimit_start = time.time()
@@ -280,20 +283,24 @@ def sub_routine(timelimit=86400):
                 second = ylabels[ind[0,second_i]]
                 weight = ((1. - dist[0,0]/dist[0,second_i])*100)
 
-                # if weight > WEIGHT_CONFIDENCE/2:
+                # if weight > PREDICTION_THRESHOLD/2:
                 # print (name, weight) , datetime.now()
                 with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
                     file.write('{0:s}\t{1:s}\t{2:s}\t{3:.2f}\t{4:.2f}\n'.format(str(datetime.now()), name, second, weight, dist[0,0]))
-                    # file.write(str(datetime.now())+'\t'+name+'\t'+str(weight)+'\n')
                 if save_faces:
                     cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/{0:s} {1:.2f}.jpg'.format(name, weight), roi)
-                    # cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/'+name+' '+str(weight)[:4]+'.jpg', roi)
-                if weight > WEIGHT_CONFIDENCE and \
+                if weight > PREDICTION_THRESHOLD and \
                     (lastJSONsave is None or \
                     time.time() - lastJSONsave > JSONsavePeriod):
                     updateJSON(name, time.time())
                     lastJSONsave = time.time()
                     JSONsavePeriod = 5 + 20 * np.random.rand()  # random delay
+                elif weight > DETECTION_THRESHOLD and \
+                    (lastJSONpostersave is None or \
+                    time.time() - lastJSONpostersave > JSONpostersavePeriod):
+                    updateJSON('poster_'+name, time.time())
+                    lastJSONpostersave = time.time()
+                    # JSONpostersavePeriod = 60                  # long delay for poster
 
                 if display_feed:
                     font = cv2.FONT_HERSHEY_SIMPLEX
