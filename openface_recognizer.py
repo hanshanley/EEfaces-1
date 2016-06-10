@@ -22,10 +22,11 @@ from dlib import rectangle
 
 # flag for saving npy array (1), or loading an old one (0)
 saveon = 1
-include_flip = True
-include_truncation = True
-include_rotation = True
-include_blur = True
+include_flip = False#True
+include_truncation = False#True
+include_rotation = False#True
+include_blur = False#True
+include_horizontal_blur = True
 
 def rotate(img, angle):
     h, w = img.shape[:2]
@@ -92,14 +93,22 @@ class OpenfaceRecognizer:
                             features = np.vstack((features, feature.reshape(1, -1)))
                             self.ylabels.append(l)
                     if include_rotation:
-                        for angle in xrange(-30, 35, 5):
+                        for angle in [-10, 10]:
                             feature = self.getRep(rotate(i, angle))  # rotate face
                             features = np.vstack((features, feature.reshape(1, -1)))
                             self.ylabels.append(l)
                     if include_blur:
-                        for blur_radius in [3, 10]:
-                            feature = vgg_feature.get_feature(cv2.blur(rgbi, (blur_radius, blur_radius), 0), self.net)  # blur face
-                            tr_features = np.vstack((tr_features, feature))
+                        for blur_radius in [10]:
+                            feature = self.getRep(cv2.blur(rgbi, (blur_radius, blur_radius), 0))  # blur face
+                            tr_features = np.vstack((tr_features, feature.reshape(1, -1)))
+                            self.ylabels.append(l)
+                    if include_horizontal_blur:
+                        for blur_radius in [10]:
+                            side = 2*blur_radius+1
+                            kernel = np.vstack((np.zeros((blur_radius, side), np.float32), np.ones((1, side), np.float32)/side, np.zeros((blur_radius, side), np.float32)))
+                            img = cv2.filter2D(rgbi, -1, kernel)
+                            feature = self.getRep(img)  # blur face
+                            tr_features = np.vstack((tr_features, feature.reshape(1, -1)))
                             self.ylabels.append(l)
             np.save('of_ylabels.npy', self.ylabels)
             np.save('of_features.npy', features)
