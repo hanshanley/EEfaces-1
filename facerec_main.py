@@ -28,7 +28,7 @@ F_WIDTH = 1280#960#640
 F_HEIGHT = 720#720#480
 relative_resolution = F_HEIGHT/float(480)
 display_feed = False
-save_faces = True
+save_faces = False
 display_poster = True
 poster_extension = '.jpg'
 
