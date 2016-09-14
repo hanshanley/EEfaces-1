@@ -176,10 +176,7 @@ def sub_routine(timelimit=86400):
 
     
     # train for the first time
-    if useVGG:
-        recognizer, ylabels = train_routine(recognizer, args['traindir'])
-    else:
-        recognizer, ylabels = train_routine(recognizer, args['traindir'])
+    recognizer, ylabels = train_routine(recognizer, args['traindir'])
 
     # set up webcam
     fwidth = F_WIDTH            # default frame dimensions
