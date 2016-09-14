@@ -28,12 +28,27 @@ include_truncation = False#True
 include_rotation = False#True
 include_blur = False#True
 include_horizontal_blur = True
+include_brightness_gradient = False
 
 def rotate(img, angle):
+    # rotates image by angle (with zero-padding)
     h, w = img.shape[:2]
     center = (w/2, h/2)
     M = cv2.getRotationMatrix2D(center, angle, 1.0)
     return cv2.warpAffine(img, M, (w, h))
+    
+def brightness_gradient(img, n=2):
+    # adds a horizontal brightness gradient to image
+    # parameter n controls the nonlinearity according to which shading is applied
+    # this effect attempts to mimic lighting conditions in the testing environment
+	gradient = np.linspace(0.1, 1, img.shape[1])
+	gradient = gradient ** n    # nonlinearity (multiplied to create shading)
+	# gradient = 1 / (1 + np.exp(-20 * (gradient - 0.5)))
+	x = np.array([], dtype='uint8').reshape((img.shape[0], 0, img.shape[2]))
+	for i in xrange(img.shape[1]):
+		shade = (img[:,i,:] * gradient[i]).reshape((img.shape[0], 1, img.shape[2])).astype('uint8')
+		x = np.hstack((x, shade))
+	return x
 
 class VGGRecognizer:
     # maps point to label in NN implementation
@@ -111,6 +126,10 @@ class VGGRecognizer:
                             feature = vgg_feature.get_feature(img, self.net)  # blur face
                             tr_features = np.vstack((tr_features, feature))
                             self.ylabels.append(l)
+                    if include_brightness_gradient:
+                        feature = vgg_feature.get_feature(brightnes_gradient(rgbi), self.net)
+                        tr_features = np.vstack((tr_features, feature))
+                        self.ylabels.append(l)
             np.save('vgg_ylabels.npy', self.ylabels)
             np.save('vgg_features.npy', tr_features)
         else:
