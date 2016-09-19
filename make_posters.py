@@ -37,7 +37,8 @@ def make_poster(image_dir, filename):
 	screen[(x_offset+y.shape[0]/2)-z.shape[0]/2:(x_offset+y.shape[0]/2)-z.shape[0]/2+z.shape[0], y_offset-2*z.shape[1]:y_offset-z.shape[1]] = z
 
 	# neural net
-	screen[x_offset:x_offset+y.shape[0], y_offset:y_offset+y.shape[1]] = y
+	# screen[x_offset:x_offset+y.shape[0], y_offset:y_offset+y.shape[1]] = y
+	screen[x_offset:x_offset+y.shape[0], y_offset-30:y_offset-30+y.shape[1]] = y
 
 	# prediction text
 	font = cv2.FONT_HERSHEY_SIMPLEX
@@ -71,6 +72,11 @@ def make_poster(image_dir, filename):
 	image_xoffset = width/2 - int(2.5*z.shape[1])
 	image_yoffset = 350
 	font_size = 1
+	
+	cv2.line(screen, (100, (x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2-15-40), (screen.shape[1]-100,(x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2-15-40), (0,0,0))
+	cv2.line(screen, (100, (x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2-15-42), (screen.shape[1]-100,(x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2-15-42), (0,0,0))
+	cv2.putText(screen, 'Crafted by', (image_xoffset-400, (x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2-15+100), font, font_size+1, (0,0,0), 2)
+	
 	cv2.putText(screen, 'Kevin Wang', (image_xoffset, (x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2-15), font, font_size, (0,0,0), 2)
 	screen[(x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2:(x_offset+y.shape[0]+image_yoffset)-z.shape[0]/2+z.shape[0], image_xoffset:image_xoffset+z.shape[1]] = z
 
