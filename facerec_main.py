@@ -27,7 +27,7 @@ from datetime import datetime
 F_WIDTH = 1280#960#640
 F_HEIGHT = 720#720#480
 relative_resolution = F_HEIGHT/float(480)
-display_feed = True
+display_feed = False
 save_faces = False
 log_faces = False
 display_poster = True
