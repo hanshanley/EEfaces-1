@@ -27,9 +27,14 @@ from datetime import datetime
 F_WIDTH = 1280#960#640
 F_HEIGHT = 720#720#480
 relative_resolution = F_HEIGHT/float(480)
+<<<<<<< HEAD
 display_feed = True
 save_faces = False
 log_faces = False
+=======
+display_feed = False
+save_faces = False
+>>>>>>> ffde5abdb8f1a2079c5a630d7a6705086c30514c
 display_poster = True
 poster_extension = '.jpg'
 
@@ -177,10 +182,7 @@ def sub_routine(timelimit=86400):
 
     
     # train for the first time
-    if useVGG:
-        recognizer, ylabels = train_routine(recognizer, args['traindir'])
-    else:
-        recognizer, ylabels = train_routine(recognizer, args['traindir'])
+    recognizer, ylabels = train_routine(recognizer, args['traindir'])
 
     # set up webcam
     fwidth = F_WIDTH            # default frame dimensions
