@@ -1,0 +1,56 @@
+Author: Kevin Wang
+Last Updated: 5/12/16
+
+Instructions for setting up environment — works on Kevin’s Macbook Pro, but have had issues when trying to install on Mac Mini.
+
+1. Install python
+2. Install pip
+	pip install virtualenv
+
+3. Make the virtual env (optional)
+	mkvirtualenv [name]
+	workon [name]
+
+4. Install the necessary libraries from pip 
+	pip install pillow numpy scipy matplotlib 
+
+5. Download opencv3.1.0.zip http://opencv.org/downloads.html, extract to a folder, 
+
+5.1 — fix the webcam issue with opencv3.1.0 waitKey(): 
+	see https://github.com/Itseez/opencv/pull/6051/commits/a2bda999211e8be9fbc5d40038fdfc9399de31fc
+
+
+5.2 Download from https://github.com/Itseez/opencv_contrib to get the extra modules, placing opencv_contrib in the same directory as the one containing opencv3.1.0
+
+5.3 Building:
+Then to install it:
+	cd opencv-3.1.0
+	mkdir build
+	cd build
+	cmake -D MAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=$VIRTUAL_ENV/ -D PYTHON_EXECUTABLE=$VIRTUAL_ENV/bin/python -D PYTHON_PACKAGES_PATH=$VIRTUAL_ENV/lib/python2.7/site-packages -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
+
+6. Install opencv
+	make -j4
+	make install
+
+6.2 Found the fix for lib installation for opencv, need to add opencv-3.1.0/build/lib to your PYTHONPATH
+	(Originally, needed the dir "lib" from the build in whatever directory you are working on in order for it to work and copy it into the working code directory...)
+
+	go to virtualenv/bin/activate 
+
+	add
+
+		export OLD_PYTHONPATH="$PYTHONPATH"
+		export PYTHONPATH="${PYTHONPATH}:/Users/Kevin/Documents/School/2016 Spring/IW/opencv-3.1.0/build/lib"
+
+	go to virtualenv/bin/postdeactivate
+	add
+
+		export PYTHONPATH="$OLD_PYTHONPATH"
+
+
+7. Verify
+	python -c "import cv2; print cv2.__version__"
+	import cv2
+	detector = cv2.AKAZE_create()
+	cv2.face.createEigenFaceRecognizer() # verifies the extra modules are working

@@ -27,8 +27,9 @@ from datetime import datetime
 F_WIDTH = 1280#960#640
 F_HEIGHT = 720#720#480
 relative_resolution = F_HEIGHT/float(480)
-display_feed = False
-save_faces = True
+display_feed = True
+save_faces = False
+log_faces = False
 display_poster = True
 poster_extension = '.jpg'
 
@@ -40,7 +41,7 @@ if useVGG:
 # the minimum proportion of the weight we need to be "confident"
 # about a face and save it to a file
 if useVGG:
-    PREDICTION_THRESHOLD = 18#25
+    PREDICTION_THRESHOLD = 12#25
 else:
     PREDICTION_THRESHOLD = 36
 DETECTION_THRESHOLD = PREDICTION_THRESHOLD/3    # weaker threshold used for poster display
@@ -194,7 +195,7 @@ def sub_routine(timelimit=86400):
     lastJSONsave = None
     lastJSONpostersave = None
     JSONsavePeriod = 5
-    JSONpostersavePeriod = 60
+    JSONpostersavePeriod = 25
 
     print 'Starting the capture.'
     timelimit_start = time.time()
@@ -287,8 +288,9 @@ def sub_routine(timelimit=86400):
 
                 # if weight > PREDICTION_THRESHOLD/2:
                 # print (name, weight) , datetime.now()
-                with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
-                    file.write('{0:s}\t{1:s}\t{2:s}\t{3:.2f}\t{4:.2f}\n'.format(str(datetime.now()), name, second, weight, dist[0,0]))
+                if log_faces:
+                    with open('/Users/princetonee/Dropbox/EEdisplayfaces/prediction_log.txt','a') as file:
+                        file.write('{0:s}\t{1:s}\t{2:s}\t{3:.2f}\t{4:.2f}\n'.format(str(datetime.now()), name, second, weight, dist[0,0]))
                 if save_faces:
                     cv2.imwrite('/Users/princetonee/Dropbox/EEdisplayfaces/faces/{0:s} {1:.2f}.jpg'.format(name, weight), roi)
                 if weight > PREDICTION_THRESHOLD and \
