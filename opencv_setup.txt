@@ -24,7 +24,7 @@ Instructions for setting up environment — works on Kevin’s Macbook Pro, but 
 
 5.3 Building:
 Then to install it:
-	cd opencv-3.1.0
+	cd opencv-3.1.0 or wherever that folder is
 	mkdir build
 	cd build
 	cmake -D MAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=$VIRTUAL_ENV/ -D PYTHON_EXECUTABLE=$VIRTUAL_ENV/bin/python -D PYTHON_PACKAGES_PATH=$VIRTUAL_ENV/lib/python2.7/site-packages -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
@@ -38,13 +38,12 @@ Then to install it:
 
 	go to virtualenv/bin/activate 
 
-	add
+	add after export VIRTUAL_ENV
 
 		export OLD_PYTHONPATH="$PYTHONPATH"
-		export PYTHONPATH="${PYTHONPATH}:/Users/Kevin/Documents/School/2016 Spring/IW/opencv-3.1.0/build/lib"
+		export PYTHONPATH="${PYTHONPATH}:YOUR_PATH_TO_THE_opencv-3.1.0/build/lib"
 
-	go to virtualenv/bin/postdeactivate
-	add
+	and add to the deactivate() loop
 
 		export PYTHONPATH="$OLD_PYTHONPATH"
 

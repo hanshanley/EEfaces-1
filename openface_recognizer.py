@@ -87,6 +87,7 @@ class OpenfaceRecognizer:
         self.ylabels = []
         if saveon == 1:
             features = np.array([]).reshape(0, 128)
+            tr_features = np.array([]).reshape(0, 128)
             for i,l in zip(images,labels):
                 print 'OpenFace: ', l
                 rep = self.getRep(i)
@@ -113,16 +114,16 @@ class OpenfaceRecognizer:
                             self.ylabels.append(l)
                     if include_blur:
                         for blur_radius in [10]:
-                            feature = self.getRep(cv2.blur(rgbi, (blur_radius, blur_radius), 0))  # blur face
-                            tr_features = np.vstack((tr_features, feature.reshape(1, -1)))
+                            feature = self.getRep(cv2.blur(i, (blur_radius, blur_radius), 0))  # blur face
+                            features = np.vstack((features, feature.reshape(1, -1)))
                             self.ylabels.append(l)
                     if include_horizontal_blur:
                         for blur_radius in [10]:
                             side = 2*blur_radius+1
                             kernel = np.vstack((np.zeros((blur_radius, side), np.float32), np.ones((1, side), np.float32)/side, np.zeros((blur_radius, side), np.float32)))
-                            img = cv2.filter2D(rgbi, -1, kernel)
+                            img = cv2.filter2D(i, -1, kernel)
                             feature = self.getRep(img)  # blur face
-                            tr_features = np.vstack((tr_features, feature.reshape(1, -1)))
+                            features = np.vstack((features, feature.reshape(1, -1)))
                             self.ylabels.append(l)
                     if include_brightness_gradient:
                         feature = self.getRep(brightness_gradient(i))

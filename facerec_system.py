@@ -23,7 +23,7 @@ from openface_recognizer import OpenfaceRecognizer
 
 
 # flag for whether or not to use the VGG recognizer for verification
-useVGG = 0
+useVGG = 1
 if useVGG == 1:
     from vgg_recognizer import VGGRecognizer
 
@@ -254,20 +254,19 @@ def main():
                 print dist,
                 print ind,
 
-                # only update prediction if the two closest neighbors agree
-                if ylabels[ind[0,0]] == ylabels[ind[0, 1]]:
-                    name = ylabels[ind[0,0]]
-                    # use 1/dist as a confidence weight
-                    weight = 1./(max((dist[0,0] - 0.2)**2., 1e-10))
-                    print name,
-                    print weight,
+                
+                name = ylabels[ind[0,0]]
+                # use 1/dist as a confidence weight
+                weight = 1./(max((dist[0,0] - 0.2)**2., 1e-10))
+                print name,
+                print weight,
 
-                    majpred = matchedface.updatePrediction(name, weight=weight)
+                majpred = matchedface.updatePrediction(name, weight=weight)
                 print ""
 
                 # when we have enough predictions for this face...
                 if len(matchedface.lastPredictions) >= matchedface.num_majority_vote:
-                    prediction, weight = matchedface.getMajorityPredictionAndWeight
+                    prediction, weight = matchedface.getMajorityPredictionAndWeight()
 
                     # Do something if we are confident
                     # if weight > WEIGHT_CONFIDENCE:
