@@ -90,7 +90,7 @@
    ```
    make clean
    ```
-   Unfortunately, for some reason this method of installing opencv does not add the libraries to your PYTHONPATH variable directory. To fix this, you will need to add the following line to your virtual environment activate script.
+   Unfortunately, for some reason this method of installing opencv does not add the libraries to your PYTHONPATH variable directory. To fix this, you will need to open your virtual environment activate script.
    ```
    open ~/facevenv/bin/activate
    ```
