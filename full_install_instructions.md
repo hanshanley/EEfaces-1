@@ -96,7 +96,7 @@
    ```
    After the line that starts with "export VIRTUAL_ENV=" add this:
    ```
-   export PYTHONPATH="${PYTHONPATH}:$VIRTUAL_ENV/facevenv/opencv-3.1.0/build/lib"
+   export PYTHONPATH="${PYTHONPATH}:$VIRTUAL_ENV/opencv-3.1.0/build/lib"
    ```
    Make sure to reload your activate script and then verify opencv was installed correctly.
    ```
