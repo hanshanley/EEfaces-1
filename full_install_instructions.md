@@ -45,8 +45,8 @@
 
 5. **Clone repos:**  Install git if not installed already.  Clone this EEfaces repo and two other repos using git. It does not matter whether the virtual environment is active for this step, but it may make sense to put the EEfaces repo in the directory created for the virtual environment (as in this example).
    ```
-   git clone https://github.com/skwang/EEfaces.git ~/facevenv
-   git clone https://github.com/cmusatyalab/openface.git ~/facevenv/EEfaces
+   git clone https://github.com/skwang/EEfaces.git ~/facevenv/EEfaces
+   git clone https://github.com/cmusatyalab/openface.git ~/facevenv/EEfaces/openface
    git clone https://github.com/torch/distro.git ~/torch --recursive
    ```
    Notice that the second repo (openface) is placed inside this one (EEfaces).  The torch repo can be placed anywhere---it will not actually be installed within the virtual environment anyway.
