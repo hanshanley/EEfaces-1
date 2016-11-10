@@ -2,3 +2,4 @@
 openface/
 *.json
 *.npy
+*.DS_Store
